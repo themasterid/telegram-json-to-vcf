@@ -7,16 +7,7 @@ import os
 def vcf(fname, lname, cell):
     cell = cell.replace(" ", "")
 
-    vcard = (
-             f"BEGIN:VCARD\n"
-             "VERSION:3.0\n"
-             f"FN:{fname}{' ' if fname else ''}{lname}\n"
-             f"N:{lname};{fname};;;\n"
-             f"TEL;TYPE=CELL:{cell}\n"
-             "END:VCARD\n"
-    )
-
-    return vcard
+    return f"BEGIN:VCARD\nVERSION:3.0\nFN:{fname}{' ' if fname else ''}{lname}\nN:{lname};{fname};;;\nTEL;TYPE=CELL:{cell}\nEND:VCARD\n"
 
 
 # Ask if the user wants to add the contact to vcf file.
@@ -73,7 +64,7 @@ if os.path.isdir(vcf_file):
 if os.path.isfile(vcf_file):
     # head is the path of vcf_file and tail is its name.
     head, tail = os.path.split(vcf_file)
-    new_file_name = "new_" + tail
+    new_file_name = f"new_{tail}"
     print(f"\n{tail} already exists. Renaming it to {new_file_name}.")
     vcf_file = head + os.sep + new_file_name
 
@@ -90,6 +81,5 @@ with open(vcf_file, "w", encoding="utf8") as f:
         cell = contact["phone_number"]
         vcard = vcf(fname, lname, cell)
 
-        is_okay = ask(vcard, add_all)
-        if is_okay:
+        if is_okay := ask(vcard, add_all):
             f.write(vcard)
